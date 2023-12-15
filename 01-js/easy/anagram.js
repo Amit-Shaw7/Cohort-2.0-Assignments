@@ -10,8 +10,11 @@ function isAnagram(str1, str2) {
     return false;
   }
 
-  str1 = str1.split("").sort().join("");
-  str2 = str2.split("").sort().join("");
+  str1 = str1.toLowerCase().split("").sort().join("");
+  str2 = str2.toLowerCase().split("").sort().join("");
+
+  console.log(str1);
+  console.log(str2);
 
   for (let i = 0; i < str1.length; i++) {
     if (str1.charAt(i) !== str2.charAt(i)) {
@@ -22,7 +25,7 @@ function isAnagram(str1, str2) {
 
   return true;
 }
-const check = isAnagram("hello", "elloh")
+const check = isAnagram("Debit Card", "Bad Credit");
 console.log(check);
 
 module.exports = isAnagram;
