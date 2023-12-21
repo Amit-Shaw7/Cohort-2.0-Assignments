@@ -39,11 +39,93 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
-  
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+const express = require('express');
+const bodyParser = require('body-parser');
+const { v4: uuidv4 } = require('uuid');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+
+let todos = [];
+
+app.get('/todos', (req, res) => {
+  return res.status(200).json({
+    todos
+  })
+});
+
+
+app.get('/todos/:id', (req, res) => {
+  const { id } = req.params;
+  const todo = todos.find((todo) => todo.id === id);
+
+  if(!todo){
+    return res.status(404).json({
+      msg : "Todo not found"
+    })
+  }
+
+  return res.status(200).json({
+    todo
+  });
+});
+
+app.post('/todos', (req, res, next) => {
+  const { title, description } = req.body;
+  const todo = {
+    id: uuidv4(),
+    title,
+    description
+  }
+  todos.push(todo);
+  return res.status(201).json({
+    todo
+  })
+});
+
+app.put('/todos/:id', (req, res, next) => {
+  const { id } = req.params;
+  const { title, description } = req.body;
+
+  const todo = todos.find((todo) => todo.id === id);
+
+  if(!todo){
+    return res.status(404)
+  }
+
+  todo.title = title;
+  todo.description = description;
+
+  return res.status(200).json({
+    todo
+  })
+});
+
+app.delete('/todos/:id', (req, res, next) => {
+  const { id } = req.params;
+
+  todos = todos.filter((todo) => todo.id !== id);
+
+  return res.status(200)
+});
+
+app.use('*', (req, res, next) => {
+  return res.status(404).json({
+    msg: "URL_NOT_FOUND"
+  })
+})
+
+// Global catch
+app.use((err, req, res, next) => {
+  res.status(500).json({
+    msg: err.message
+  })
+})
+
+// app.listen(3000, () => {
+//   console.log("Server is running on port 3000");
+// });
+
+module.exports = app;
